@@ -3,12 +3,14 @@ import React, { useEffect, useState } from "react";
 
 function App() {
   const [data, setData] = useState([]);
+  const [masterData, setMasterData] = useState([]);
+  const [fps, setFps] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          "https://rktbbrnpcrguplfnjlxq.supabase.co/rest/v1/gpu_used_value",
+          "https://rktbbrnpcrguplfnjlxq.supabase.co/rest/v1/gpu_all_used_value?price",
           {
             method: "GET",
             headers: {
@@ -18,7 +20,9 @@ function App() {
           }
         );
         const jsonData = await response.json();
+
         setData(jsonData);
+        setMasterData(jsonData);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -27,8 +31,126 @@ function App() {
     fetchData();
   }, []);
 
+  // handle fps radio button
+  const handleFps = (e) => {
+    setFps(e.target.value);
+    if (e.target.value === "0") {
+      setData(masterData);
+    } else {
+      const filteredData = masterData.filter(
+        (gpu) => gpu["1080_med"] > parseInt(e.target.value)
+      );
+      setData(filteredData);
+    }
+  };
+
   return (
     <div>
+      <div
+        style={{
+          position: "fixed",
+          top: "0.5%",
+          left: "0.5%",
+          padding: "20px",
+          display: "flex",
+          flexWrap: "wrap",
+          width: "10%",
+          fontWeight: "bold",
+        }}
+      >
+        Database GPU Bang Mordred
+      </div>
+      {/* floating box on left */}
+      <div
+        style={{
+          position: "fixed",
+          top: "50%",
+          left: "0.5%",
+          transform: "translateY(-50%)",
+          padding: "20px",
+          backgroundColor: "white",
+          // top right and bottom right border radius 20px
+          borderRadius: "20px",
+          boxShadow: "0 0 10px rgba(0,0,0,0.5)",
+          width: "10%",
+          height: "35%",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+        }}
+      >
+        <div
+          style={{
+            // bold and center
+            fontWeight: "bold",
+            textAlign: "center",
+          }}
+        >
+          Sort & Filter
+        </div>
+        <div>
+          Min FPS
+          {/* radio buttons for 60 100 144 */}
+          <div>
+            <div>
+              <input
+                type="radio"
+                id="0"
+                name="fps"
+                value="0"
+                onChange={handleFps}
+                defaultChecked
+              />
+              <label for="0">None</label>
+            </div>
+
+            <div>
+              <input
+                type="radio"
+                id="60"
+                name="fps"
+                value="60"
+                onChange={handleFps}
+              />
+              <label for="60">60</label>
+            </div>
+
+            <div>
+              <input
+                type="radio"
+                id="100"
+                name="fps"
+                value="100"
+                onChange={handleFps}
+              />
+              <label for="100">100</label>
+            </div>
+
+            <div>
+              <input
+                type="radio"
+                id="144"
+                name="fps"
+                value="144"
+                onChange={handleFps}
+              />
+              <label for="144">144</label>
+            </div>
+          </div>
+        </div>
+        <div>
+          Harga Min
+          <input type="number" style={{ width: "90%" }} />
+        </div>
+        <div>
+          Harga Max
+          <input type="number" style={{ width: "90%" }} />
+        </div>
+        <div>
+          <button>Submit</button>
+        </div>
+      </div>
+
       {data.length > 0 && (
         <div
           style={{
@@ -42,7 +164,7 @@ function App() {
             marginRight: "auto",
           }}
         >
-          <Item gpu={data[0]} />
+          <Item gpu={data[0]} index={0} />
         </div>
       )}
       {data.length > 2 && (
@@ -58,8 +180,8 @@ function App() {
             marginRight: "auto",
           }}
         >
-          <Item gpu={data[1]} />
-          <Item gpu={data[2]} />
+          <Item gpu={data[1]} index={1} />
+          <Item gpu={data[2]} index={2} />
         </div>
       )}
       {data.length > 3 && (
@@ -76,7 +198,7 @@ function App() {
           }}
         >
           {data.slice(3).map((gpu) => (
-            <Item gpu={gpu} />
+            <Item gpu={gpu} index={data.indexOf(gpu)} />
           ))}
         </div>
       )}
@@ -86,6 +208,9 @@ function App() {
 
 function Item(props) {
   const [hover, setHover] = useState(false);
+
+  //gold, silver, bronze
+  const [colors, setColors] = useState(["#a67c00", "#71706e", "#CD7F32"]);
 
   return (
     <div
@@ -111,13 +236,13 @@ function Item(props) {
     >
       <div
         style={{
-          // bold, center
-          fontWeight: "bold",
-          textAlign: "center",
-          marginBottom: "10px",
+          position: "relative",
+          top: "0",
+          left: "0",
+          color: colors[props.index],
         }}
       >
-        {props.gpu.model}
+        #{props.index + 1} {props.gpu.model}
       </div>
       {props.gpu.tpu_id && (
         <img
