@@ -27,54 +27,59 @@ function App() {
     fetchData();
   }, []);
 
-  console.log(data);
   return (
     <div>
-      <div
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          justifyContent: "center",
-          alignItems: "center",
-          padding: "20px",
-          width: "75vw",
-          marginLeft: "auto",
-          marginRight: "auto",
-        }}
-      >
-        <Item gpu={data[0]} />
-      </div>
-      <div
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          justifyContent: "center",
-          alignItems: "center",
-          padding: "20px",
-          width: "75vw",
-          marginLeft: "auto",
-          marginRight: "auto",
-        }}
-      >
-        <Item gpu={data[1]} />
-        <Item gpu={data[2]} />
-      </div>
-      <div
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          justifyContent: "center",
-          alignItems: "center",
-          padding: "20px",
-          width: "75vw",
-          marginLeft: "auto",
-          marginRight: "auto",
-        }}
-      >
-        {data.slice(3).map((gpu) => (
-          <Item gpu={gpu} />
-        ))}
-      </div>
+      {data.length > 0 && (
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            justifyContent: "center",
+            alignItems: "center",
+            padding: "20px",
+            width: "75vw",
+            marginLeft: "auto",
+            marginRight: "auto",
+          }}
+        >
+          <Item gpu={data[0]} />
+        </div>
+      )}
+      {data.length > 2 && (
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            justifyContent: "center",
+            alignItems: "center",
+            padding: "20px",
+            width: "75vw",
+            marginLeft: "auto",
+            marginRight: "auto",
+          }}
+        >
+          <Item gpu={data[1]} />
+          <Item gpu={data[2]} />
+        </div>
+      )}
+      {data.length > 3 && (
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            justifyContent: "center",
+            alignItems: "center",
+            padding: "20px",
+            width: "75vw",
+            marginLeft: "auto",
+            marginRight: "auto",
+          }}
+        >
+          {data.slice(3).map((gpu) => (
+            <Item gpu={gpu} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
