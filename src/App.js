@@ -5,7 +5,8 @@ function App() {
   const [data, setData] = useState([]);
   const [masterData, setMasterData] = useState([]);
   const [fps, setFps] = useState(0);
-
+  const [priceMin, setPriceMin] = useState(0);
+  const [priceMax, setPriceMax] = useState(0);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -42,6 +43,41 @@ function App() {
       );
       setData(filteredData);
     }
+  };
+
+  const handlePriceMin = (e) => {
+    if (
+      e.target.value === "" ||
+      e.target.value === null ||
+      e.target.value === "0"
+    ) {
+      setPriceMax(0);
+    } else {
+      setPriceMin(e.target.value);
+    }
+  };
+
+  const handlePriceMax = (e) => {
+    if (
+      e.target.value === "" ||
+      e.target.value === null ||
+      e.target.value === "0"
+    ) {
+      setPriceMax(99999999999);
+    } else {
+      setPriceMax(e.target.value);
+    }
+  };
+
+  const Submit = (e) => {
+    const filteredData = masterData.filter(
+      (gpu) =>
+        gpu.price_used_manual_formatted > parseInt(priceMin) &&
+        gpu.price_used_manual_formatted < parseInt(priceMax),
+      [priceMin, priceMax]
+    );
+    setData(filteredData);
+    console.log("Max : ", priceMax, "\nMin : ", priceMin, "\nData : ", data);
   };
 
   return (
@@ -140,14 +176,24 @@ function App() {
         </div>
         <div>
           Harga Min
-          <input type="number" style={{ width: "90%" }} />
+          <input
+            type="number"
+            defaultValue={0}
+            style={{ width: "90%" }}
+            onChange={handlePriceMin}
+          />
         </div>
         <div>
           Harga Max
-          <input type="number" style={{ width: "90%" }} />
+          <input
+            type="number"
+            defaultValue={100000000}
+            style={{ width: "90%" }}
+            onChange={handlePriceMax}
+          />
         </div>
         <div>
-          <button>Submit</button>
+          <button onClick={Submit}>Submit</button>
         </div>
       </div>
 
